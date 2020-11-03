@@ -1,17 +1,17 @@
 {
     "type": "form",
     "initApi": "https://houtai.baidu.com/api/mock2/page/initData",
-    "title": "用户信息",
+    "title": "表单",
     "controls": [
         {
             "type": "text",
-            "name": "name",
-            "label": "姓名"
+            "name": "title",
+            "label": "标题"
         },
         {
-            "type": "email",
-            "name": "email",
-            "label": "邮箱"
+            "type": "text",
+            "name": "date",
+            "label": "日期"
         }
     ]
 }

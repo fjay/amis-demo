@@ -25,7 +25,7 @@
 <div id="root" class="app-wrapper"></div>
 <script src="sdk/sdk.js"></script>
 <script type="text/javascript">
-    let globalConfig = {
+    const globalConfig = {
         navUrl: function () {
             return "http://127.0.0.1/amis-demo/nav.json";
         },
@@ -37,17 +37,14 @@
     (function () {
         let amis = amisRequire('amis/embed');
 
-        function renderWithAmis(navId, body) {
+        function renderWithAmis(body) {
             let page = {
                 "type": "page",
                 "body": body,
-                "data": {
-                    "nav": navId,
-                },
                 "aside": [
                     {
                         "type": "form",
-                        "redirect": "#${nav}",
+                        "redirect": "?nav=${nav}",
                         "title": "",
                         "submitText": "",
                         "submitOnChange": true,
@@ -66,19 +63,26 @@
             amis.embed('#root', page);
         }
 
+        function getUrlParam(name) {
+            let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            let r = window.location.search.substr(1).match(reg);
+            if (r != null) {
+                return decodeURIComponent(r[2]);
+            }
+            return null;
+        }
 
         function parseNavIdAndRender() {
-            let href = window.location.href;
-            let index = href.indexOf('#');
-            if (index === -1) {
-                renderWithAmis(index, [{
+            let navId = getUrlParam("nav")
+
+            if (navId == null) {
+                renderWithAmis(navId, [{
                     "type": "tpl",
                     "tpl": "欢迎使用"
                 }]);
                 return;
             }
 
-            let navId = href.substring(index + 1);
             renderWithConfig(navId)
         }
 
@@ -93,7 +97,7 @@
             }
             xmlRequest.onreadystatechange = function () {
                 if (xmlRequest.readyState === 4 && xmlRequest.status === 200) {
-                    renderWithAmis(navId, eval('(' + xmlRequest.responseText + ')'));
+                    renderWithAmis(eval('(' + xmlRequest.responseText + ')'));
                 }
             }
             xmlRequest.open("GET", globalConfig.pageConfigUrl(navId), true);
