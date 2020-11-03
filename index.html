@@ -60,8 +60,32 @@
                 ]
             }
 
-            amis.embed('#root', page);
-        }
+            amis.embed('#root', page, {}, {
+                updateLocation: (to, replace) => {
+                    switch (to) {
+                        case 'goBack':
+                            return window.history.back();
+                        case 'goHome':
+                            return window.location.replace('/');
+                    }
+
+                    const location = window.location;
+
+                    if (to && to[0] === '#') {
+                        to = location.pathname + location.search + to;
+                    } else if (to && to[0] === '?') {
+                        to = location.pathname + to;
+                    }
+
+                    const idx = to.indexOf('?');
+                    const idx2 = to.indexOf('#');
+                    let pathname = ~idx ? to.substring(0, idx) : ~idx2 ? to.substring(0, idx2) : to;
+                    let search = ~idx ? to.substring(idx, ~idx2 ? idx2 : undefined) : '';
+                    let hash = ~idx2 ? to.substring(idx2) : location.hash;
+
+                    window.history.pushState(null, '', pathname + search + hash);
+                }
+            });        }
 
         function getUrlParam(name) {
             let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
