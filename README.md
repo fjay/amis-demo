@@ -1,0 +1,1 @@
+https://baidu.gitee.io/amis/docs/index
