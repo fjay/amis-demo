@@ -1,0 +1,12 @@
+{
+    "type": "page",
+    "body": {
+        "label": "点击弹框",
+        "type": "button",
+        "actionType": "dialog",
+        "dialog": {
+            "title": "弹框标题",
+            "body": "这是一个弹框"
+        }
+    }
+}

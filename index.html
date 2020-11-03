@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8"/>
+    <title>amis demo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <link rel="stylesheet" href="sdk/sdk.css"/>
+    <style>
+        html,
+        body,
+        .app-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body id="body">
+<div id="root" class="app-wrapper"></div>
+<script src="sdk/sdk.js"></script>
+<script type="text/javascript">
+    let globalConfig = {
+        navUrl: function () {
+            return "http://127.0.0.1/amis-demo/nav.json";
+        },
+        pageConfigUrl: function (navId) {
+            return "http://127.0.0.1/amis-demo/page" + navId + ".json";
+        }
+    };
+
+    (function () {
+        let amis = amisRequire('amis/embed');
+
+        function renderWithAmis(navId, body) {
+            let page = {
+                "type": "page",
+                "body": body,
+                "data": {
+                    "nav": navId,
+                },
+                "aside": [
+                    {
+                        "type": "form",
+                        "redirect": "#${nav}",
+                        "title": "",
+                        "submitText": "",
+                        "submitOnChange": true,
+                        "controls": [
+                            {
+                                "type": "tree",
+                                "name": "nav",
+                                "label": "导航",
+                                "source": globalConfig.navUrl()
+                            }
+                        ]
+                    }
+                ]
+            }
+
+            amis.embed('#root', page);
+        }
+
+
+        function parseNavIdAndRender() {
+            let href = window.location.href;
+            let index = href.indexOf('#');
+            if (index === -1) {
+                renderWithAmis(index, [{
+                    "type": "tpl",
+                    "tpl": "欢迎使用"
+                }]);
+                return;
+            }
+
+            let navId = href.substring(index + 1);
+            renderWithConfig(navId)
+        }
+
+        function renderWithConfig(navId) {
+            let xmlRequest;
+            if (window.XMLHttpRequest) {
+                //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+                xmlRequest = new XMLHttpRequest();
+            } else {
+                // IE6, IE5 浏览器执行代码
+                xmlRequest = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xmlRequest.onreadystatechange = function () {
+                if (xmlRequest.readyState === 4 && xmlRequest.status === 200) {
+                    renderWithAmis(navId, eval('(' + xmlRequest.responseText + ')'));
+                }
+            }
+            xmlRequest.open("GET", globalConfig.pageConfigUrl(navId), true);
+            xmlRequest.send();
+        }
+
+        parseNavIdAndRender();
+
+        document.getElementById("body").onhashchange = function () {
+            parseNavIdAndRender()
+        };
+    })();
+</script>
+</body>
+
+</html>

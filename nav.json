@@ -1,0 +1,30 @@
+{
+    "status": 0,
+    "msg": "",
+    "data": {
+        "options": [
+            {
+                "label": "Folder A",
+                "value": 1,
+                "children": [
+                    {
+                        "label": "file A",
+                        "value": 2
+                    },
+                    {
+                        "label": "file B",
+                        "value": 3
+                    }
+                ]
+            },
+            {
+                "label": "file C",
+                "value": 4
+            },
+            {
+                "label": "file D",
+                "value": 5
+            }
+        ]
+    }
+}
