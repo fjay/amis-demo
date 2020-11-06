@@ -72,33 +72,7 @@
                     "body": {
                         "type": "nav",
                         "stacked": true,
-                        "links": [
-                            {
-                                "label": "页面1",
-                                "to": "?menuId=1"
-                            },
-                            {
-                                "label": "页面2",
-                                "children": [
-                                    {
-                                        "label": "页面2-1",
-                                        "to": "?menuId=2"
-                                    },
-                                    {
-                                        "label": "页面2-2",
-                                        "to": "?menuId=3"
-                                    },
-                                    {
-                                        "label": "页面2-3（disabled）",
-                                        "to": "?menuId=4"
-                                    }
-                                ]
-                            },
-                            {
-                                "label": "页面3",
-                                "to": "?menuId=5"
-                            }
-                        ]
+                        "source": globalConfig.menuUrl()
                     }
                 },
                 "body": body

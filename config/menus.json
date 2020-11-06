@@ -1,30 +1,33 @@
 {
-    "status": 0,
-    "msg": "xx",
-    "data": {
-        "options": [
-            {
-                "label": "Folder A",
-                "value": 1,
-                "children": [
-                    {
-                        "label": "file A",
-                        "value": 2
-                    },
-                    {
-                        "label": "file B",
-                        "value": 3
-                    }
-                ]
-            },
-            {
-                "label": "file C",
-                "value": 4
-            },
-            {
-                "label": "file D",
-                "value": 5
-            }
+  "status": 0,
+  "msg": "",
+  "data": {
+    "links": [
+      {
+        "label": "页面1",
+        "to": "?menuId=1"
+      },
+      {
+        "label": "页面2",
+        "children": [
+          {
+            "label": "页面2-1",
+            "to": "?menuId=2"
+          },
+          {
+            "label": "页面2-2",
+            "to": "?menuId=3"
+          },
+          {
+            "label": "页面2-3",
+            "to": "?menuId=4"
+          }
         ]
-    }
+      },
+      {
+        "label": "页面3",
+        "to": "?menuId=5"
+      }
+    ]
+  }
 }
