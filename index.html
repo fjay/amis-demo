@@ -26,11 +26,11 @@
 <script src="sdk/sdk.js"></script>
 <script type="text/javascript">
     const globalConfig = {
-        navUrl: function () {
-            return "http://127.0.0.1/amis-demo/nav.json";
+        menuUrl: function () {
+            return "http://127.0.0.1:8000/api/menus";
         },
-        pageConfigUrl: function (navId) {
-            return "http://127.0.0.1/amis-demo/page" + navId + ".json";
+        pageConfigUrl: function (menuId) {
+            return "http://127.0.0.1:8000/config/page" + menuId + ".json";
         }
     };
 
@@ -69,16 +69,16 @@
                 "aside": [
                     {
                         "type": "form",
-                        "redirect": "?nav=${nav}",
+                        "redirect": "?menuId=${menuId}",
                         "title": "",
                         "submitText": "",
                         "submitOnChange": true,
                         "controls": [
                             {
                                 "type": "tree",
-                                "name": "nav",
+                                "name": "menuId",
                                 "label": "导航",
-                                "source": globalConfig.navUrl()
+                                "source": globalConfig.menuUrl()
                             }
                         ]
                     }
@@ -99,22 +99,22 @@
             return null;
         }
 
-        function parseNavIdAndRender() {
-            let navId = getUrlParam("nav")
+        function parsemenuIdAndRender() {
+            let menuId = getUrlParam("menuId")
 
-            if (navId == null) {
-                renderWithAmis(navId, [{
+            if (menuId == null) {
+                renderWithAmis(menuId, [{
                     "type": "tpl",
                     "tpl": "欢迎使用"
                 }]);
                 return;
             }
 
-            renderWithConfig(navId)
+            renderWithConfig(menuId)
         }
 
-        function renderWithConfig(navId) {
-            ajaxGet(globalConfig.pageConfigUrl(navId), function (body) {
+        function renderWithConfig(menuId) {
+            ajaxGet(globalConfig.pageConfigUrl(menuId), function (body) {
                 renderWithAmis(eval('(' + body + ')'))
             });
         }
@@ -145,10 +145,10 @@
         }
 
         document.getElementById("body").onhashchange = function () {
-            parseNavIdAndRender()
+            parsemenuIdAndRender()
         };
 
-        parseNavIdAndRender();
+        parsemenuIdAndRender();
     })();
 </script>
 </body>
