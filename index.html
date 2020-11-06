@@ -27,7 +27,7 @@
 <script type="text/javascript">
     const globalConfig = {
         menuUrl: function () {
-            return "http://127.0.0.1:8000/api/menus";
+            return "http://127.0.0.1:8000/config/menus.json";
         },
         pageConfigUrl: function (menuId) {
             return "http://127.0.0.1:8000/config/page" + menuId + ".json";
@@ -65,24 +65,43 @@
         function renderWithAmis(body) {
             let page = {
                 "type": "page",
-                "body": body,
-                "aside": [
-                    {
-                        "type": "form",
-                        "redirect": "?menuId=${menuId}",
-                        "title": "",
-                        "submitText": "",
-                        "submitOnChange": true,
-                        "controls": [
+                "aside": {
+                    "type": "wrapper",
+                    "size": "xs",
+                    "className": "",
+                    "body": {
+                        "type": "nav",
+                        "stacked": true,
+                        "links": [
                             {
-                                "type": "tree",
-                                "name": "menuId",
-                                "label": "导航",
-                                "source": globalConfig.menuUrl()
+                                "label": "页面1",
+                                "to": "?menuId=1"
+                            },
+                            {
+                                "label": "页面2",
+                                "children": [
+                                    {
+                                        "label": "页面2-1",
+                                        "to": "?menuId=2"
+                                    },
+                                    {
+                                        "label": "页面2-2",
+                                        "to": "?menuId=3"
+                                    },
+                                    {
+                                        "label": "页面2-3（disabled）",
+                                        "to": "?menuId=4"
+                                    }
+                                ]
+                            },
+                            {
+                                "label": "页面3",
+                                "to": "?menuId=5"
                             }
                         ]
                     }
-                ]
+                },
+                "body": body
             }
 
             amis.embed('#root', page, {}, {
@@ -99,7 +118,7 @@
             return null;
         }
 
-        function parsemenuIdAndRender() {
+        function parseMenuIdAndRender() {
             let menuId = getUrlParam("menuId")
 
             if (menuId == null) {
@@ -145,10 +164,10 @@
         }
 
         document.getElementById("body").onhashchange = function () {
-            parsemenuIdAndRender()
+            parseMenuIdAndRender()
         };
 
-        parsemenuIdAndRender();
+        parseMenuIdAndRender();
     })();
 </script>
 </body>
