@@ -114,28 +114,41 @@
         }
 
         function renderWithConfig(navId) {
-            let xmlRequest;
-            if (window.XMLHttpRequest) {
-                //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
-                xmlRequest = new XMLHttpRequest();
-            } else {
-                // IE6, IE5 浏览器执行代码
-                xmlRequest = new ActiveXObject("Microsoft.XMLHTTP");
-            }
-            xmlRequest.onreadystatechange = function () {
-                if (xmlRequest.readyState === 4 && xmlRequest.status === 200) {
-                    renderWithAmis(eval('(' + xmlRequest.responseText + ')'));
-                }
-            }
-            xmlRequest.open("GET", globalConfig.pageConfigUrl(navId), true);
-            xmlRequest.send();
+            ajaxGet(globalConfig.pageConfigUrl(navId), function (body) {
+                renderWithAmis(eval('(' + body + ')'))
+            });
         }
 
-        parseNavIdAndRender();
+        function ajaxGet(url, callback) {
+            let xhr;
+            if (window.XMLHttpRequest) {
+                //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+                xhr = new XMLHttpRequest();
+            } else {
+                // IE6, IE5 浏览器执行代码
+                xhr = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+
+            // 设置跨域 Cookie
+            xhr.withCredentials = true;
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    if (!callback) {
+                        return;
+                    }
+
+                    callback(xhr.responseText);
+                }
+            }
+            xhr.open("GET", url, true);
+            xhr.send();
+        }
 
         document.getElementById("body").onhashchange = function () {
             parseNavIdAndRender()
         };
+
+        parseNavIdAndRender();
     })();
 </script>
 </body>
