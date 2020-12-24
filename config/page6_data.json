@@ -1,0 +1,128 @@
+{
+  "status": 0,
+  "msg": "ok",
+  "data": {
+    "processDefinitionName": "简单流程",
+    "actions": [
+      {
+        "@type": "org.team4u.workflow.domain.form.process.definition.ProcessFormAction",
+        "actionId": "save",
+        "actionName": "保存",
+        "requiredPermissions": [
+          "EDIT"
+        ]
+      },
+      {
+        "@type": "org.team4u.workflow.domain.form.process.definition.ProcessFormAction",
+        "actionId": "submit",
+        "actionName": "提交",
+        "requiredPermissions": [
+          "EDIT"
+        ]
+      },
+      {
+        "@type": "org.team4u.workflow.domain.form.process.definition.ProcessFormAction",
+        "actionId": "test",
+        "actionName": "表达式测试",
+        "requiredPermissions": [
+          "EDIT"
+        ]
+      },
+      {
+        "@type": "org.team4u.workflow.domain.form.process.definition.ProcessFormAction",
+        "actionId": "approve",
+        "actionName": "同意",
+        "requiredPermissions": [
+          "REVIEW"
+        ]
+      },
+      {
+        "@type": "org.team4u.workflow.domain.form.process.definition.ProcessFormAction",
+        "actionId": "reject",
+        "actionName": "拒绝",
+        "requiredPermissions": [
+          "REVIEW"
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "@type": "org.team4u.workflow.domain.definition.node.StaticNode",
+        "nodeId": "created",
+        "nodeName": "已保存",
+        "nextNodeId": "createdActionNode"
+      },
+      {
+        "@type": "org.team4u.workflow.domain.definition.node.ActionChoiceNode",
+        "nodeId": "createdActionNode",
+        "nodeName": "已保存动作选择器",
+        "actionNodes": [
+          {
+            "actionId": "save",
+            "nextNodeId": "created"
+          },
+          {
+            "actionId": "submit",
+            "nextNodeId": "pending"
+          },
+          {
+            "actionId": "test",
+            "nextNodeId": "dynamic"
+          }
+        ]
+      },
+      {
+        "@type": "org.team4u.workflow.domain.definition.node.DynamicChoiceNode",
+        "nodeId": "dynamic",
+        "nodeName": "表达式选择器",
+        "rule": {
+          "type": "expression",
+          "body": [
+            {
+              "created": "${ext.a == 1}"
+            },
+            {
+              "pending": "${ext.a == 2}"
+            }
+          ]
+        }
+      },
+      {
+        "@type": "org.team4u.workflow.domain.form.process.definition.node.AssigneeNode",
+        "nodeId": "pending",
+        "nodeName": "待审核",
+        "ruleType": "USER",
+        "ruleExpression": "test",
+        "nextNodeId": "pendingActionNode"
+      },
+      {
+        "@type": "org.team4u.workflow.domain.form.process.definition.node.AssigneeActionChoiceNode",
+        "nodeId": "pendingActionNode",
+        "nodeName": "待审核动作选择器",
+        "choiceType": "ANY",
+        "actionNodes": [
+          {
+            "actionId": "reject",
+            "nextNodeId": "rejected"
+          },
+          {
+            "actionId": "approve",
+            "nextNodeId": "completed"
+          }
+        ]
+      },
+      {
+        "@type": "org.team4u.workflow.domain.definition.node.BeanNode",
+        "nodeId": "rejected",
+        "nodeName": "审批拒绝",
+        "beanName": "test"
+      },
+      {
+        "@type": "org.team4u.workflow.domain.definition.node.BeanNode",
+        "nodeId": "completed",
+        "nodeName": "审批完成",
+        "beanName": "test"
+      }
+    ]
+  }
+}

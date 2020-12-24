@@ -1,0 +1,254 @@
+{
+  "type": "page",
+  "body": {
+    "type": "service",
+    "api": "http://127.0.0.1:8000/config/page6_data.json",
+    "body": [
+      {
+        "type": "page",
+        "body": "${processDefinitionName}"
+      },
+      {
+        "type": "crud",
+        "title": "动作",
+        "source": "$actions",
+        "columns": [
+          {
+            "name": "actionId",
+            "label": "标识"
+          },
+          {
+            "name": "actionName",
+            "label": "名称"
+          },
+          {
+            "name": "requiredPermissions",
+            "label": "权限"
+          },
+          {
+            "type": "operation",
+            "label": "操作",
+            "buttons": [
+              {
+                "label": "修改",
+                "type": "button",
+                "actionType": "drawer",
+                "drawer": {
+                  "title": "编辑动作",
+                  "body": {
+                    "type": "form",
+                    "debug": true,
+                    "controls": [
+                      {
+                        "type": "text",
+                        "name": "actionId",
+                        "label": "标识"
+                      },
+                      {
+                        "type": "text",
+                        "name": "actionName",
+                        "label": "名称"
+                      },
+                      {
+                        "type": "select",
+                        "name": "requiredPermissions",
+                        "label": "权限",
+                        "multiple": true,
+                        "joinValues": false,
+                        "extractValue": true,
+                        "options": [
+                          {
+                            "label": "EDIT",
+                            "value": "EDIT"
+                          },
+                          {
+                            "label": "REVIEW",
+                            "value": "REVIEW"
+                          },
+                          {
+                            "label": "VIEW",
+                            "value": "VIEW"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "crud",
+        "title": "节点",
+        "source": "$nodes",
+        "columns": [
+          {
+            "name": "nodeId",
+            "label": "标识"
+          },
+          {
+            "name": "nodeName",
+            "label": "名称"
+          },
+          {
+            "name": "@type",
+            "label": "类型",
+            "type": "mapping",
+            "map": {
+              "org.team4u.workflow.domain.form.process.definition.node.AssigneeNode": "处理人节点",
+              "org.team4u.workflow.domain.form.process.definition.node.AssigneeActionChoiceNode": "处理人动作选择节点",
+              "org.team4u.workflow.domain.definition.node.BeanNode": "Bean节点",
+              "org.team4u.workflow.domain.definition.node.DynamicChoiceNode": "动态选择节点",
+              "org.team4u.workflow.domain.definition.node.ActionChoiceNode": "动作选择节点",
+              "org.team4u.workflow.domain.definition.node.StaticNode": "静态节点",
+              "org.team4u.workflow.domain.definition.node.BeanChoiceNode": "Bean选择节点",
+              "*": "${@type}"
+            }
+          },
+          {
+            "type": "operation",
+            "label": "操作",
+            "buttons": [
+              {
+                "label": "修改",
+                "type": "button",
+                "actionType": "drawer",
+                "drawer": {
+                  "title": "编辑节点",
+                  "body": {
+                    "type": "form",
+                    "debug": true,
+                    "controls": [
+                      {
+                        "type": "text",
+                        "name": "nodeId",
+                        "label": "标识"
+                      },
+                      {
+                        "type": "text",
+                        "name": "nodeName",
+                        "label": "名称"
+                      },
+                      {
+                        "type": "select",
+                        "name": "@type",
+                        "label": "类型",
+                        "options": [
+                          {
+                            "label": "处理人节点",
+                            "value": "org.team4u.workflow.domain.form.process.definition.node.AssigneeNode"
+                          },
+                          {
+                            "label": "处理人动作选择节点",
+                            "value": "org.team4u.workflow.domain.form.process.definition.node.AssigneeActionChoiceNode"
+                          },
+                          {
+                            "label": "Bean节点",
+                            "value": "org.team4u.workflow.domain.definition.node.BeanNode"
+                          },
+                          {
+                            "label": "动态选择节点",
+                            "value": "org.team4u.workflow.domain.definition.node.DynamicChoiceNode"
+                          },
+                          {
+                            "label": "动作选择节点",
+                            "value": "org.team4u.workflow.domain.definition.node.ActionChoiceNode"
+                          },
+                          {
+                            "label": "静态节点",
+                            "value": "org.team4u.workflow.domain.definition.node.StaticNode"
+                          },
+                          {
+                            "label": "Bean选择节点",
+                            "value": ",.team4u.workflow.domain.definition.node.BeanChoiceNode"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "text",
+                        "name": "beanName",
+                        "label": "Bean名称",
+                        "visibleOn": "'org.team4u.workflow.domain.definition.node.BeanNode,org.team4u.workflow.domain.definition.node.BeanChoiceNode'.indexOf(this['@type']) >= 0"
+                      },
+                      {
+                        "type": "text",
+                        "name": "rule.type",
+                        "label": "规则类型",
+                        "visibleOn": "'org.team4u.workflow.domain.definition.node.DynamicChoiceNode'.indexOf(this['@type']) >= 0"
+                      },
+                      {
+                        "name": "rule.body",
+                        "type": "textarea",
+                        "label": "规则内容",
+                        "visibleOn": "'org.team4u.workflow.domain.definition.node.DynamicChoiceNode'.indexOf(this['@type']) >= 0"
+                      },
+                      {
+                        "type": "text",
+                        "name": "nextNodeId",
+                        "label": "指向节点",
+                        "visibleOn": "'org.team4u.workflow.domain.form.process.definition.node.AssigneeNode'.indexOf(this['@type']) >= 0"
+                      },
+                      {
+                        "type": "table",
+                        "title": "动作节点组",
+                        "source": "$actionNodes",
+                        "name": "actionNodes",
+                        "visibleOn": "'org.team4u.workflow.domain.definition.node.ActionChoiceNode,org.team4u.workflow.domain.form.process.definition.node.AssigneeActionChoiceNode'.indexOf(this['@type']) >= 0",
+                        "columns": [
+                          {
+                            "label": "动作",
+                            "name": "actionId",
+                            "quickEdit": {
+                              "type": "select",
+                              "options": [
+                                {
+                                  "label": "save",
+                                  "value": "save"
+                                },
+                                {
+                                  "label": "submit",
+                                  "value": "submit"
+                                },
+                                {
+                                  "label": "test",
+                                  "value": "test"
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "name": "nextNodeId",
+                            "label": "节点",
+                            "quickEdit": {
+                              "type": "select",
+                              "options": [
+                                {
+                                  "label": "save",
+                                  "value": "save"
+                                },
+                                {
+                                  "label": "submit",
+                                  "value": "submit"
+                                },
+                                {
+                                  "label": "test",
+                                  "value": "test"
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
