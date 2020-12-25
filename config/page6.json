@@ -1,8 +1,74 @@
 {
   "type": "page",
+  "data": {
+    "nodeTypes": [
+      {
+        "label": "处理人节点",
+        "value": "org.team4u.workflow.domain.form.process.definition.node.AssigneeNode"
+      },
+      {
+        "label": "处理人动作选择节点",
+        "value": "org.team4u.workflow.domain.form.process.definition.node.AssigneeActionChoiceNode"
+      },
+      {
+        "label": "Bean节点",
+        "value": "org.team4u.workflow.domain.definition.node.BeanNode"
+      },
+      {
+        "label": "Bean选择节点",
+        "value": "org.team4u.workflow.domain.definition.node.BeanChoiceNode"
+      },
+      {
+        "label": "动态选择节点",
+        "value": "org.team4u.workflow.domain.definition.node.DynamicChoiceNode"
+      },
+      {
+        "label": "动作选择节点",
+        "value": "org.team4u.workflow.domain.definition.node.ActionChoiceNode"
+      },
+      {
+        "label": "静态节点",
+        "value": "org.team4u.workflow.domain.definition.node.StaticNode"
+      },
+      {
+        "label": "Bean选择节点",
+        "value": "team4u.workflow.domain.definition.node.BeanChoiceNode"
+      }
+    ],
+    "assigneeRules": [
+      {
+        "label": "用户标识",
+        "value": "USER"
+      },
+      {
+        "label": "用户角色",
+        "value": "ROLE"
+      }
+    ],
+    "dynamicRules": [
+      {
+        "label": "表达式",
+        "value": "expression"
+      }
+    ],
+    "actionRequiredPermissions": [
+      {
+        "label": "EDIT",
+        "value": "EDIT"
+      },
+      {
+        "label": "REVIEW",
+        "value": "REVIEW"
+      },
+      {
+        "label": "VIEW",
+        "value": "VIEW"
+      }
+    ]
+  },
   "body": {
     "type": "service",
-    "api": "http://127.0.0.1:8000/config/page6_data.json",
+    "api": "/config/page6_data.json",
     "body": [
       {
         "type": "page",
@@ -11,6 +77,7 @@
       {
         "type": "crud",
         "title": "动作",
+        "name": "actions",
         "source": "$actions",
         "columns": [
           {
@@ -56,20 +123,7 @@
                         "multiple": true,
                         "joinValues": false,
                         "extractValue": true,
-                        "options": [
-                          {
-                            "label": "EDIT",
-                            "value": "EDIT"
-                          },
-                          {
-                            "label": "REVIEW",
-                            "value": "REVIEW"
-                          },
-                          {
-                            "label": "VIEW",
-                            "value": "VIEW"
-                          }
-                        ]
+                        "source": "${actionRequiredPermissions}"
                       }
                     ]
                   }
@@ -95,17 +149,8 @@
           {
             "name": "@type",
             "label": "类型",
-            "type": "mapping",
-            "map": {
-              "org.team4u.workflow.domain.form.process.definition.node.AssigneeNode": "处理人节点",
-              "org.team4u.workflow.domain.form.process.definition.node.AssigneeActionChoiceNode": "处理人动作选择节点",
-              "org.team4u.workflow.domain.definition.node.BeanNode": "Bean节点",
-              "org.team4u.workflow.domain.definition.node.DynamicChoiceNode": "动态选择节点",
-              "org.team4u.workflow.domain.definition.node.ActionChoiceNode": "动作选择节点",
-              "org.team4u.workflow.domain.definition.node.StaticNode": "静态节点",
-              "org.team4u.workflow.domain.definition.node.BeanChoiceNode": "Bean选择节点",
-              "*": "${@type}"
-            }
+            "type": "tpl",
+            "tpl": "${nodeTypes|filter:value:match:@type|pick:label}"
           },
           {
             "type": "operation",
@@ -135,36 +180,7 @@
                         "type": "select",
                         "name": "@type",
                         "label": "类型",
-                        "options": [
-                          {
-                            "label": "处理人节点",
-                            "value": "org.team4u.workflow.domain.form.process.definition.node.AssigneeNode"
-                          },
-                          {
-                            "label": "处理人动作选择节点",
-                            "value": "org.team4u.workflow.domain.form.process.definition.node.AssigneeActionChoiceNode"
-                          },
-                          {
-                            "label": "Bean节点",
-                            "value": "org.team4u.workflow.domain.definition.node.BeanNode"
-                          },
-                          {
-                            "label": "动态选择节点",
-                            "value": "org.team4u.workflow.domain.definition.node.DynamicChoiceNode"
-                          },
-                          {
-                            "label": "动作选择节点",
-                            "value": "org.team4u.workflow.domain.definition.node.ActionChoiceNode"
-                          },
-                          {
-                            "label": "静态节点",
-                            "value": "org.team4u.workflow.domain.definition.node.StaticNode"
-                          },
-                          {
-                            "label": "Bean选择节点",
-                            "value": ",.team4u.workflow.domain.definition.node.BeanChoiceNode"
-                          }
-                        ]
+                        "source": "${nodeTypes}"
                       },
                       {
                         "type": "text",
@@ -173,70 +189,93 @@
                         "visibleOn": "'org.team4u.workflow.domain.definition.node.BeanNode,org.team4u.workflow.domain.definition.node.BeanChoiceNode'.indexOf(this['@type']) >= 0"
                       },
                       {
-                        "type": "text",
+                        "type": "json-editor",
+                        "name": "beanConfig",
+                        "label": "Bean配置",
+                        "visibleOn": "'org.team4u.workflow.domain.definition.node.BeanNode,org.team4u.workflow.domain.definition.node.BeanChoiceNode'.indexOf(this['@type']) >= 0"
+                      },
+                      {
+                        "type": "select",
                         "name": "rule.type",
                         "label": "规则类型",
-                        "visibleOn": "'org.team4u.workflow.domain.definition.node.DynamicChoiceNode'.indexOf(this['@type']) >= 0"
+                        "visibleOn": "'org.team4u.workflow.domain.definition.node.DynamicChoiceNode'.indexOf(this['@type']) >= 0",
+                        "source": "${dynamicRules}"
                       },
                       {
                         "name": "rule.body",
-                        "type": "textarea",
+                        "type": "json-editor",
                         "label": "规则内容",
                         "visibleOn": "'org.team4u.workflow.domain.definition.node.DynamicChoiceNode'.indexOf(this['@type']) >= 0"
                       },
                       {
-                        "type": "text",
-                        "name": "nextNodeId",
-                        "label": "指向节点",
+                        "type": "select",
+                        "name": "ruleType",
+                        "label": "处理人规则类型",
+                        "visibleOn": "'org.team4u.workflow.domain.form.process.definition.node.AssigneeNode'.indexOf(this['@type']) >= 0",
+                        "source": "${assigneeRules}"
+                      },
+                      {
+                        "type": "textarea",
+                        "name": "ruleExpression",
+                        "label": "处理人规则内容",
                         "visibleOn": "'org.team4u.workflow.domain.form.process.definition.node.AssigneeNode'.indexOf(this['@type']) >= 0"
                       },
                       {
-                        "type": "table",
-                        "title": "动作节点组",
-                        "source": "$actionNodes",
+                        "type": "select",
+                        "name": "nextNodeId",
+                        "label": "指向节点",
+                        "visibleOn": "'org.team4u.workflow.domain.form.process.definition.node.AssigneeNode,org.team4u.workflow.domain.definition.node.StaticNode'.indexOf(this['@type']) >= 0",
+                        "source": {
+                          "method": "post",
+                          "url": "/api/map",
+                          "data": {
+                            "options": {
+                              "$nodes": {
+                                "label": "${nodeName}",
+                                "value": "${nodeId}"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "combo",
                         "name": "actionNodes",
-                        "visibleOn": "'org.team4u.workflow.domain.definition.node.ActionChoiceNode,org.team4u.workflow.domain.form.process.definition.node.AssigneeActionChoiceNode'.indexOf(this['@type']) >= 0",
-                        "columns": [
+                        "label": "动作节点组",
+                        "multiple": true,
+                        "controls": [
                           {
+                            "type": "select",
                             "label": "动作",
                             "name": "actionId",
-                            "quickEdit": {
-                              "type": "select",
-                              "options": [
-                                {
-                                  "label": "save",
-                                  "value": "save"
-                                },
-                                {
-                                  "label": "submit",
-                                  "value": "submit"
-                                },
-                                {
-                                  "label": "test",
-                                  "value": "test"
+                            "source": {
+                              "method": "post",
+                              "url": "/api/map",
+                              "data": {
+                                "options": {
+                                  "$actions": {
+                                    "label": "${actionName}",
+                                    "value": "${actionId}"
+                                  }
                                 }
-                              ]
+                              }
                             }
                           },
                           {
                             "name": "nextNodeId",
                             "label": "节点",
-                            "quickEdit": {
-                              "type": "select",
-                              "options": [
-                                {
-                                  "label": "save",
-                                  "value": "save"
-                                },
-                                {
-                                  "label": "submit",
-                                  "value": "submit"
-                                },
-                                {
-                                  "label": "test",
-                                  "value": "test"
+                            "type": "select",
+                            "source": {
+                              "method": "post",
+                              "url": "/api/map",
+                              "data": {
+                                "options": {
+                                  "$nodes": {
+                                    "label": "${nodeName}",
+                                    "value": "${nodeId}"
+                                  }
                                 }
-                              ]
+                              }
                             }
                           }
                         ]

@@ -72,6 +72,15 @@
         ]
       },
       {
+        "@type": "org.team4u.workflow.domain.definition.node.BeanChoiceNode",
+        "nodeId": "testChoiceNode",
+        "nodeName": "预期到test节点",
+        "beanName": "test",
+        "beanConfig": {
+          "name": "test"
+        }
+      },
+      {
         "@type": "org.team4u.workflow.domain.definition.node.DynamicChoiceNode",
         "nodeId": "dynamic",
         "nodeName": "表达式选择器",
