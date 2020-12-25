@@ -184,6 +184,7 @@
               "name": "actionNodes",
               "label": "动作节点组",
               "multiple": true,
+              "visibleOn": "'org.team4u.workflow.domain.form.process.definition.node.AssigneeActionChoiceNode,org.team4u.workflow.domain.definition.node.ActionChoiceNode'.indexOf(this['@type']) >= 0",
               "controls": [
                 {
                   "type": "select",
