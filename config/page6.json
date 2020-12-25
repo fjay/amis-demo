@@ -64,7 +64,167 @@
         "label": "VIEW",
         "value": "VIEW"
       }
-    ]
+    ],
+    "actionEdit": {
+      "type": "button",
+      "actionType": "drawer",
+      "drawer": {
+        "title": "编辑动作",
+        "body": {
+          "type": "form",
+          "target": "actions",
+          "debug": true,
+          "controls": [
+            {
+              "type": "text",
+              "name": "actionId",
+              "label": "标识"
+            },
+            {
+              "type": "text",
+              "name": "actionName",
+              "label": "名称"
+            },
+            {
+              "type": "select",
+              "name": "requiredPermissions",
+              "label": "权限",
+              "multiple": true,
+              "joinValues": false,
+              "extractValue": true,
+              "source": "${actionRequiredPermissions}"
+            }
+          ]
+        }
+      }
+    },
+    "nodeEdit": {
+      "type": "button",
+      "actionType": "drawer",
+      "drawer": {
+        "title": "编辑节点",
+        "body": {
+          "type": "form",
+          "debug": true,
+          "controls": [
+            {
+              "type": "text",
+              "name": "nodeId",
+              "label": "标识"
+            },
+            {
+              "type": "text",
+              "name": "nodeName",
+              "label": "名称"
+            },
+            {
+              "type": "select",
+              "name": "@type",
+              "label": "类型",
+              "source": "${nodeTypes}"
+            },
+            {
+              "type": "text",
+              "name": "beanName",
+              "label": "Bean名称",
+              "visibleOn": "'org.team4u.workflow.domain.definition.node.BeanNode,org.team4u.workflow.domain.definition.node.BeanChoiceNode'.indexOf(this['@type']) >= 0"
+            },
+            {
+              "type": "json-editor",
+              "name": "beanConfig",
+              "label": "Bean配置",
+              "visibleOn": "'org.team4u.workflow.domain.definition.node.BeanNode,org.team4u.workflow.domain.definition.node.BeanChoiceNode'.indexOf(this['@type']) >= 0"
+            },
+            {
+              "type": "select",
+              "name": "rule.type",
+              "label": "规则类型",
+              "visibleOn": "'org.team4u.workflow.domain.definition.node.DynamicChoiceNode'.indexOf(this['@type']) >= 0",
+              "source": "${dynamicRules}"
+            },
+            {
+              "name": "rule.body",
+              "type": "json-editor",
+              "label": "规则内容",
+              "visibleOn": "'org.team4u.workflow.domain.definition.node.DynamicChoiceNode'.indexOf(this['@type']) >= 0"
+            },
+            {
+              "type": "select",
+              "name": "ruleType",
+              "label": "处理人规则类型",
+              "visibleOn": "'org.team4u.workflow.domain.form.process.definition.node.AssigneeNode'.indexOf(this['@type']) >= 0",
+              "source": "${assigneeRules}"
+            },
+            {
+              "type": "textarea",
+              "name": "ruleExpression",
+              "label": "处理人规则内容",
+              "visibleOn": "'org.team4u.workflow.domain.form.process.definition.node.AssigneeNode'.indexOf(this['@type']) >= 0"
+            },
+            {
+              "type": "select",
+              "name": "nextNodeId",
+              "label": "指向节点",
+              "visibleOn": "'org.team4u.workflow.domain.form.process.definition.node.AssigneeNode,org.team4u.workflow.domain.definition.node.StaticNode'.indexOf(this['@type']) >= 0",
+              "source": {
+                "method": "post",
+                "url": "/api/map",
+                "data": {
+                  "options": {
+                    "$nodes": {
+                      "label": "${nodeName}",
+                      "value": "${nodeId}"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "combo",
+              "name": "actionNodes",
+              "label": "动作节点组",
+              "multiple": true,
+              "controls": [
+                {
+                  "type": "select",
+                  "label": "动作",
+                  "name": "actionId",
+                  "source": {
+                    "method": "post",
+                    "url": "/api/map",
+                    "data": {
+                      "options": {
+                        "$actions": {
+                          "label": "${actionName}",
+                          "value": "${actionId}"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "name": "nextNodeId",
+                  "label": "节点",
+                  "type": "select",
+                  "source": {
+                    "method": "post",
+                    "url": "/api/map",
+                    "data": {
+                      "options": {
+                        "$nodes": {
+                          "label": "${nodeName}",
+                          "value": "${nodeId}"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
   },
   "body": {
     "type": "service",
@@ -73,6 +233,20 @@
       {
         "type": "page",
         "body": "${processDefinitionName}"
+      },
+      {
+        "type": "service",
+        "schemaApi": {
+          "method": "post",
+          "url": "/api/map",
+          "cache": 100000,
+          "data": {
+            "label": "新增动作",
+            "level": "primary",
+            "className": "m-b-sm",
+            "&": "${actionEdit}"
+          }
+        }
       },
       {
         "type": "crud",
@@ -97,41 +271,34 @@
             "label": "操作",
             "buttons": [
               {
-                "label": "修改",
-                "type": "button",
-                "actionType": "drawer",
-                "drawer": {
-                  "title": "编辑动作",
-                  "body": {
-                    "type": "form",
-                    "debug": true,
-                    "controls": [
-                      {
-                        "type": "text",
-                        "name": "actionId",
-                        "label": "标识"
-                      },
-                      {
-                        "type": "text",
-                        "name": "actionName",
-                        "label": "名称"
-                      },
-                      {
-                        "type": "select",
-                        "name": "requiredPermissions",
-                        "label": "权限",
-                        "multiple": true,
-                        "joinValues": false,
-                        "extractValue": true,
-                        "source": "${actionRequiredPermissions}"
-                      }
-                    ]
+                "type": "service",
+                "schemaApi": {
+                  "method": "post",
+                  "url": "/api/map",
+                  "cache": 100000,
+                  "data": {
+                    "label": "编辑",
+                    "&": "${actionEdit}"
                   }
                 }
               }
             ]
           }
         ]
+      },
+      {
+        "type": "service",
+        "schemaApi": {
+          "method": "post",
+          "url": "/api/map",
+          "cache": 100000,
+          "data": {
+            "label": "新增节点",
+            "level": "primary",
+            "className": "m-b-sm",
+            "&": "${nodeEdit}"
+          }
+        }
       },
       {
         "type": "crud",
@@ -157,130 +324,14 @@
             "label": "操作",
             "buttons": [
               {
-                "label": "修改",
-                "type": "button",
-                "actionType": "drawer",
-                "drawer": {
-                  "title": "编辑节点",
-                  "body": {
-                    "type": "form",
-                    "debug": true,
-                    "controls": [
-                      {
-                        "type": "text",
-                        "name": "nodeId",
-                        "label": "标识"
-                      },
-                      {
-                        "type": "text",
-                        "name": "nodeName",
-                        "label": "名称"
-                      },
-                      {
-                        "type": "select",
-                        "name": "@type",
-                        "label": "类型",
-                        "source": "${nodeTypes}"
-                      },
-                      {
-                        "type": "text",
-                        "name": "beanName",
-                        "label": "Bean名称",
-                        "visibleOn": "'org.team4u.workflow.domain.definition.node.BeanNode,org.team4u.workflow.domain.definition.node.BeanChoiceNode'.indexOf(this['@type']) >= 0"
-                      },
-                      {
-                        "type": "json-editor",
-                        "name": "beanConfig",
-                        "label": "Bean配置",
-                        "visibleOn": "'org.team4u.workflow.domain.definition.node.BeanNode,org.team4u.workflow.domain.definition.node.BeanChoiceNode'.indexOf(this['@type']) >= 0"
-                      },
-                      {
-                        "type": "select",
-                        "name": "rule.type",
-                        "label": "规则类型",
-                        "visibleOn": "'org.team4u.workflow.domain.definition.node.DynamicChoiceNode'.indexOf(this['@type']) >= 0",
-                        "source": "${dynamicRules}"
-                      },
-                      {
-                        "name": "rule.body",
-                        "type": "json-editor",
-                        "label": "规则内容",
-                        "visibleOn": "'org.team4u.workflow.domain.definition.node.DynamicChoiceNode'.indexOf(this['@type']) >= 0"
-                      },
-                      {
-                        "type": "select",
-                        "name": "ruleType",
-                        "label": "处理人规则类型",
-                        "visibleOn": "'org.team4u.workflow.domain.form.process.definition.node.AssigneeNode'.indexOf(this['@type']) >= 0",
-                        "source": "${assigneeRules}"
-                      },
-                      {
-                        "type": "textarea",
-                        "name": "ruleExpression",
-                        "label": "处理人规则内容",
-                        "visibleOn": "'org.team4u.workflow.domain.form.process.definition.node.AssigneeNode'.indexOf(this['@type']) >= 0"
-                      },
-                      {
-                        "type": "select",
-                        "name": "nextNodeId",
-                        "label": "指向节点",
-                        "visibleOn": "'org.team4u.workflow.domain.form.process.definition.node.AssigneeNode,org.team4u.workflow.domain.definition.node.StaticNode'.indexOf(this['@type']) >= 0",
-                        "source": {
-                          "method": "post",
-                          "url": "/api/map",
-                          "data": {
-                            "options": {
-                              "$nodes": {
-                                "label": "${nodeName}",
-                                "value": "${nodeId}"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      {
-                        "type": "combo",
-                        "name": "actionNodes",
-                        "label": "动作节点组",
-                        "multiple": true,
-                        "controls": [
-                          {
-                            "type": "select",
-                            "label": "动作",
-                            "name": "actionId",
-                            "source": {
-                              "method": "post",
-                              "url": "/api/map",
-                              "data": {
-                                "options": {
-                                  "$actions": {
-                                    "label": "${actionName}",
-                                    "value": "${actionId}"
-                                  }
-                                }
-                              }
-                            }
-                          },
-                          {
-                            "name": "nextNodeId",
-                            "label": "节点",
-                            "type": "select",
-                            "source": {
-                              "method": "post",
-                              "url": "/api/map",
-                              "data": {
-                                "options": {
-                                  "$nodes": {
-                                    "label": "${nodeName}",
-                                    "value": "${nodeId}"
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        ]
-                      }
-                    ]
+                "type": "service",
+                "schemaApi": {
+                  "method": "post",
+                  "url": "/api/map",
+                  "cache": 100000,
+                  "data": {
+                    "label": "编辑",
+                    "&": "${nodeEdit}"
                   }
                 }
               }

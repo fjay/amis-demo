@@ -1,0 +1,17 @@
+{
+  "status": 0,
+  "msg": "",
+  "data": {
+    "type": "tabs",
+    "tabs": [
+      {
+        "title": "TabA",
+        "body": "卡片A内容"
+      },
+      {
+        "title": "TabB",
+        "body": "卡片B内容"
+      }
+    ]
+  }
+}
